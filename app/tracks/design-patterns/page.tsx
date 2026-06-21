@@ -1,7 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { phases } from '@/data/design-patterns'
+import { useAuth } from '@/context/AuthContext'
+import { loadProgress, saveProgress } from '@/lib/progress'
+import LoadingScreen from '@/components/LoadingScreen'
 import styles from './page.module.css'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -15,21 +19,43 @@ const DIFFICULTY_COLOR: Record<string, string> = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DesignPatternsPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const [activePhase, setActivePhase]             = useState(0)
   const [expandedPattern, setExpandedPattern]     = useState<string | null>(null)
   const [expandedProblem, setExpandedProblem]     = useState<string | null>(null)
   const [completedProblems, setCompletedProblems] = useState<Set<string>>(new Set())
+
+  // Protect the route
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
+
+  // Load progress from database on mount or user change
+  useEffect(() => {
+    if (user) {
+      loadProgress(user.uid, 'design-patterns').then((set) => {
+        setCompletedProblems(set)
+      })
+    }
+  }, [user])
 
   const phase = phases[activePhase]
 
   const toggleProblem = (pid: string) =>
     setExpandedProblem(prev => (prev === pid ? null : pid))
 
-  const toggleComplete = (pid: string, e: React.MouseEvent) => {
+  const toggleComplete = async (pid: string, e: React.MouseEvent) => {
     e.stopPropagation()
+    if (!user) return
+
     setCompletedProblems(prev => {
       const next = new Set(prev)
       next.has(pid) ? next.delete(pid) : next.add(pid)
+      // Save updated progress back to Firestore/local DB
+      saveProgress(user.uid, 'design-patterns', next)
       return next
     })
   }
@@ -37,6 +63,10 @@ export default function DesignPatternsPage() {
   const totalProblems  = phases.flatMap(p => p.patterns.flatMap(pt => pt.problems)).length
   const completedCount = completedProblems.size
   const progressPct    = Math.round((completedCount / totalProblems) * 100)
+
+  if (loading || !user) {
+    return <LoadingScreen />
+  }
 
   return (
     // Three CSS vars cover every dynamic color on this page

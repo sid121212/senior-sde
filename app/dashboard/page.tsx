@@ -6,23 +6,13 @@ import TrackCard from '@/components/TrackCard'
 import StatsBar from '@/components/StatsBar'
 import HowToUse from '@/components/HowToUse'
 import LoadingScreen from '@/components/LoadingScreen'
+import { useAuth } from '@/context/AuthContext'
+import { loadProgress } from '@/lib/progress'
+import { useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ProgressMap = Record<string, number> // trackId → completed count
-
-// ─── Stubs (swap for real Firebase/Auth when ready) ───────────────────────────
-
-async function loadProgress(_uid: string, _trackId: string): Promise<Set<string>> {
-  return new Set<string>()
-}
-
-function useAuthStub() {
-  return {
-    user: { uid: 'stub-uid', displayName: 'Siddharth Mehta', email: 'siddharth@example.com' },
-    loading: false,
-  }
-}
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -34,13 +24,17 @@ function getFirstName(name: string | null | undefined): string {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, loading } = useAuthStub()
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const [progressLoaded, setProgressLoaded] = useState(false)
 
-  // Redirect guard (uncomment when Firebase auth is wired):
-  // const router = useRouter()
-  // useEffect(() => { if (!loading && !user) router.push('/') }, [user, loading])
+  // Redirect guard:
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
 
   // Load all track progress in parallel
   useEffect(() => {
