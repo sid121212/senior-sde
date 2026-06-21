@@ -53,7 +53,11 @@ export default function DesignPatternsPage() {
 
     setCompletedProblems(prev => {
       const next = new Set(prev)
-      next.has(pid) ? next.delete(pid) : next.add(pid)
+      if (next.has(pid)) {
+        next.delete(pid)
+      } else {
+        next.add(pid)
+      }
       // Save updated progress back to Firestore/local DB
       saveProgress(user.uid, 'design-patterns', next)
       return next

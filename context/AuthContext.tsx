@@ -30,6 +30,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+interface MockUserData {
+  uid: string
+  email: string
+  displayName: string
+  password?: string
+}
+
 export function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -77,8 +84,8 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       // Mock Sign In
       await new Promise((resolve) => setTimeout(resolve, 800)) // simulate network delay
       const usersStr = localStorage.getItem('prepos_mock_users') || '[]'
-      const users = JSON.parse(usersStr)
-      const found = users.find((u: any) => u.email.toLowerCase() === email.toLowerCase())
+      const users: MockUserData[] = JSON.parse(usersStr)
+      const found = users.find((u) => u.email.toLowerCase() === email.toLowerCase())
       
       if (!found || found.password !== password) {
         setLoading(false)
@@ -107,10 +114,11 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
           displayName: credential.user.displayName,
         })
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in')
+    } catch (err) {
+      const error = err as Error
+      setError(error.message || 'Failed to sign in')
       setLoading(false)
-      throw err
+      throw error
     }
   }
 
@@ -122,16 +130,16 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       // Mock Sign Up
       await new Promise((resolve) => setTimeout(resolve, 800))
       const usersStr = localStorage.getItem('prepos_mock_users') || '[]'
-      const users = JSON.parse(usersStr)
+      const users: MockUserData[] = JSON.parse(usersStr)
       
-      if (users.some((u: any) => u.email.toLowerCase() === email.toLowerCase())) {
+      if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
         setLoading(false)
         const err = new Error('auth/email-already-in-use: The email address is already in use by another account.')
         setError(err.message)
         throw err
       }
 
-      const newMockUser = {
+      const newMockUser: MockUserData = {
         uid: `mock-uid-${Math.random().toString(36).substr(2, 9)}`,
         email,
         displayName: name,
@@ -162,10 +170,11 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
           displayName: name,
         })
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up')
+    } catch (err) {
+      const error = err as Error
+      setError(error.message || 'Failed to sign up')
       setLoading(false)
-      throw err
+      throw error
     }
   }
 
@@ -184,10 +193,11 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
       await signOut(auth)
       setUser(null)
       setLoading(false)
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign out')
+    } catch (err) {
+      const error = err as Error
+      setError(error.message || 'Failed to sign out')
       setLoading(false)
-      throw err
+      throw error
     }
   }
 

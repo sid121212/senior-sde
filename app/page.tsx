@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 
 export default function LoginPage() {
-  const { user, loading, error, signIn, signUp } = useAuth()
+  const { user, loading, signIn, signUp } = useAuth()
   const router = useRouter()
 
   const [isLogin, setIsLogin] = useState(true)
@@ -21,11 +21,6 @@ export default function LoginPage() {
       router.push('/dashboard')
     }
   }, [user, loading, router])
-
-  // Clear errors when toggling modes
-  useEffect(() => {
-    setFormError(null)
-  }, [isLogin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,10 +42,11 @@ export default function LoginPage() {
         await signUp(email, password, name)
       }
       // Successful auth redirects via the useEffect hook
-    } catch (err: any) {
+    } catch (err) {
       console.error(err)
       // Extract a readable error message
-      let msg = err.message || 'Authentication failed.'
+      const error = err as Error
+      let msg = error.message || 'Authentication failed.'
       if (msg.includes('auth/invalid-credential') || msg.includes('incorrect')) {
         msg = 'Invalid email or password.'
       } else if (msg.includes('auth/email-already-in-use')) {
@@ -127,7 +123,7 @@ export default function LoginPage() {
           }}
         >
           <button
-            onClick={() => setIsLogin(true)}
+            onClick={() => { setIsLogin(true); setFormError(null); }}
             style={{
               flex: 1,
               background: 'transparent',
@@ -146,7 +142,7 @@ export default function LoginPage() {
             [ LOGIN ]
           </button>
           <button
-            onClick={() => setIsLogin(false)}
+            onClick={() => { setIsLogin(false); setFormError(null); }}
             style={{
               flex: 1,
               background: 'transparent',
