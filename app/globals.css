@@ -237,6 +237,67 @@ a {
   gap: 16px;
 }
 
+/* ─── Company Marquee ────────────────────────────────────────────────────────── */
+.marquee-container {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  gap: 0;
+  flex: 1;
+  margin-left: 0;
+  margin-right: 24px;
+  /* Fades on the edges */
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  gap: 40px;
+  padding: 0;
+  min-width: 100%;
+  animation: scroll-marquee 30s linear infinite;
+  align-items: center;
+}
+
+.marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.85;
+}
+
+.marquee-item:hover {
+  color: var(--text-primary);
+  opacity: 1;
+}
+
+.marquee-logo {
+  height: 16px;
+  width: auto;
+  display: block;
+}
+
+@keyframes scroll-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────────── */
 .footer {
   border-top: 1px solid var(--border-subtle);
