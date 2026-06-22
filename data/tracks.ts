@@ -26,9 +26,9 @@ export const tracks: Track[] = [
     emoji: '🧮',
     description: 'Sliding Window · Two Pointers · Trees · Graphs · DP',
     accentColor: '#00FF94',
-    totalProblems: 0,
+    totalProblems: 77,
     href: '/tracks/dsa',
-    enabled: false,
+    enabled: true,
   },
   {
     id: 'lld',

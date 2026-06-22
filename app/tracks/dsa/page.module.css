@@ -1,0 +1,464 @@
+/* ──────────────────────────────────────────────────────────────────────────────
+   DSA Patterns Track — CSS Module
+   Dynamic values are supplied via CSS custom properties set inline in the TSX:
+     --phase-color   : active phase accent color
+     --phase-accent  : active phase text-on-accent color
+     --progress-pct  : global progress fill width (e.g. "42%")
+   ────────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page wrapper ──────────────────────────────────────────────────────────── */
+.page {
+  font-family: 'Courier New', 'Inconsolata', monospace;
+  background: #0d0d0d;
+  min-height: 100vh;
+  color: #e0e0e0;
+}
+
+/* ── Sticky header ─────────────────────────────────────────────────────────── */
+.header {
+  background: #111111;
+  border-bottom: 2px solid #222222;
+  padding: 28px 32px 20px;
+  position: sticky;
+  top: 52px; /* clears global Navbar */
+  z-index: 50;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.headerMeta {
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.headerSource {
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* Progress block (top-right) */
+.progressBlock {
+  text-align: right;
+}
+
+.progressPct {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--phase-color);
+  font-family: monospace;
+}
+
+.progressLabel {
+  font-size: 11px;
+  color: #555;
+}
+
+.progressBarTrack {
+  margin-top: 6px;
+  height: 4px;
+  width: 160px;
+  background: #222;
+  border-radius: 2px;
+}
+
+.progressBarFill {
+  height: 100%;
+  width: var(--progress-pct, 0%);
+  background: var(--phase-color);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Phase tab strip */
+.phaseTabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.phaseTab {
+  background: #1a1a1a;
+  color: #666;
+  border: 2px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+/* Active tab */
+.phaseTabActive {
+  background: var(--tab-color);
+  color: var(--tab-accent);
+  border-color: var(--tab-color);
+}
+
+/* ── Phase heading ─────────────────────────────────────────────────────────── */
+.phaseHeading {
+  padding: 24px 32px 16px;
+  border-bottom: 1px solid #1c1c1c;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.phaseTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--phase-color);
+}
+
+.phaseSubtitle {
+  font-size: 13px;
+  color: #555;
+}
+
+/* ── Pattern list ──────────────────────────────────────────────────────────── */
+.patternsList {
+  padding: 16px 32px 48px;
+}
+
+.patternItem {
+  margin-bottom: 12px;
+}
+
+.patternRow {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 8px;
+  padding: 14px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s;
+}
+
+.patternRowOpen {
+  background: #161616;
+  border-color: color-mix(in srgb, var(--phase-color) 31%, transparent);
+  border-radius: 8px 8px 0 0;
+}
+
+.patternTag {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.patternInfo {
+  flex: 1;
+}
+
+.patternNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.patternName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #cccccc;
+}
+
+.patternNameActive {
+  color: var(--phase-color);
+}
+
+.patternProgressChip {
+  font-size: 11px;
+  color: #444;
+  background: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.patternConcept {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.6;
+}
+
+.patternFrequency {
+  font-size: 10px;
+  color: var(--phase-color);
+  background: color-mix(in srgb, var(--phase-color) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--phase-color) 20%, transparent);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.chevron {
+  color: #444;
+  font-size: 12px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Problems container ────────────────────────────────────────────────────── */
+.problemsContainer {
+  border: 1px solid color-mix(in srgb, var(--phase-color) 19%, transparent);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  background: #0f0f0f;
+}
+
+.problemItem {
+  border-top: 1px solid #1a1a1a;
+}
+
+.problemItem:first-child {
+  border-top: none;
+}
+
+.problemRow {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.problemRowDone {
+  background: #0f1a0f;
+}
+
+/* Checkbox */
+.checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 2px solid #333;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #000;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.checkboxDone {
+  border-color: #22c55e;
+  background: #22c55e;
+}
+
+/* Problem info */
+.problemContent {
+  flex: 1;
+}
+
+.problemTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.problemTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #dddddd;
+}
+
+.problemTitleDone {
+  color: #555;
+  text-decoration: line-through;
+}
+
+.difficultyBadge {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.leetcodeLink {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  color: #888;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  padding: 1px 7px;
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: monospace;
+  transition: all 0.2s;
+}
+
+.leetcodeLink:hover {
+  color: #ffa116; /* Leetcode orange/yellow */
+  border-color: #ffa11640;
+  background: #ffa11608;
+}
+
+.patternTags {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.patternTagChip {
+  font-size: 10px;
+  color: #666;
+  background: #1a1a1a;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.problemCompanies {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.problemCompanyTag {
+  font-size: 10px;
+  color: #888;
+  border: 1px solid #2a2a2a;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.chevronSmall {
+  color: #444;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+/* ── Detail panel ──────────────────────────────────────────────────────────── */
+.detailPanel {
+  padding: 0 20px 16px 54px;
+}
+
+.detailSection {
+  margin-bottom: 12px;
+}
+
+.detailLabel {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #555;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.detailText {
+  font-size: 13px;
+  color: #aaaaaa;
+  line-height: 1.7;
+}
+
+.hintBox {
+  background: #141414;
+  border: 1px solid color-mix(in srgb, var(--phase-color) 14%, transparent);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.hintLabel {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--phase-color);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.hintText {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.6;
+}
+
+.patternDetailBlock {
+  background: #161616;
+  border: 1px solid #222;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 16px 20px 24px;
+  margin-bottom: 12px;
+}
+
+.whenToUseBox {
+  background: #1c1c1c30;
+  border-left: 2px solid var(--phase-color);
+  padding: 8px 14px;
+  margin-top: 10px;
+}
+
+.whenToUseLabel {
+  font-size: 10px;
+  color: var(--phase-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.whenToUseText {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.6;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .header {
+    padding: 20px 20px 16px;
+    top: 48px;
+  }
+
+  .patternsList {
+    padding: 12px 16px 40px;
+  }
+
+  .phaseHeading {
+    padding: 16px 16px 12px;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detailPanel {
+    padding: 0 12px 12px 12px;
+  }
+
+  .progressBarTrack {
+    width: 120px;
+  }
+}
