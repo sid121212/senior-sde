@@ -6,6 +6,7 @@ import TrackCard from '@/components/TrackCard'
 import StatsBar from '@/components/StatsBar'
 import HowToUse from '@/components/HowToUse'
 import LoadingScreen from '@/components/LoadingScreen'
+import LeaderboardWidget from '@/components/LeaderboardWidget'
 import { useAuth } from '@/context/AuthContext'
 import { loadProgress } from '@/lib/progress'
 import { useRouter } from 'next/navigation'
@@ -49,6 +50,66 @@ export default function DashboardPage() {
       results.forEach(({ id, done }) => { map[id] = done })
       setProgressMap(map)
       setProgressLoaded(true)
+
+      // Sync computed stats back to user profile DB/store
+      let totalSolved = 0
+      results.forEach(({ done }) => { totalSolved += done })
+
+      let strongestTrack = 'None'
+      let maxSolved = 0
+      enabled.forEach((t) => {
+        const solved = map[t.id] ?? 0
+        if (solved > maxSolved) {
+          maxSolved = solved
+          strongestTrack = t.title
+        }
+      })
+
+      import('@/lib/firebase').then(({ db, isFirebaseConfigured }) => {
+        if (!isFirebaseConfigured || !db) {
+          // Mock mode sync
+          const usersStr = localStorage.getItem('prepos_mock_users') || '[]'
+          try {
+            const users = JSON.parse(usersStr)
+            if (Array.isArray(users)) {
+              const userIdx = users.findIndex((u: { uid: string }) => u.uid === user.uid)
+              if (userIdx !== -1) {
+                const u = users[userIdx]
+                if (u.totalSolved !== totalSolved || u.strongestTrack !== strongestTrack) {
+                  u.totalSolved = totalSolved
+                  u.strongestTrack = strongestTrack
+                  u.trackProgress = map
+                  localStorage.setItem('prepos_mock_users', JSON.stringify(users))
+                }
+              }
+            }
+          } catch (e) {
+            console.error('Error auto-syncing mock statistics:', e)
+          }
+        } else {
+          // Firebase mode sync
+          import('firebase/firestore').then(({ doc, getDoc, setDoc }) => {
+            const userDocRef = doc(db, 'users', user.uid)
+            getDoc(userDocRef).then((docSnap) => {
+              if (docSnap.exists()) {
+                const data = docSnap.data()
+                if (data.totalSolved !== totalSolved || data.strongestTrack !== strongestTrack) {
+                  setDoc(userDocRef, {
+                    totalSolved,
+                    strongestTrack,
+                    trackProgress: map,
+                    updatedAt: new Date().toISOString()
+                  }, { merge: true }).catch((err) => {
+                    console.error('Error updating user stats in Firestore:', err)
+                  })
+                }
+              }
+            }).catch((err) => {
+              console.error('Error loading user doc to sync:', err)
+            })
+          })
+        }
+      })
     })
   }, [user])
 
@@ -66,28 +127,37 @@ export default function DashboardPage() {
         pick a track and get to work.
       </p>
 
-      {/* ── Stats ── */}
-      <div style={{ marginBottom: '32px' }}>
-        <StatsBar progressMap={progressLoaded ? progressMap : {}} />
-      </div>
+      <div className="dashboard-layout">
+        <div className="dashboard-main">
+          {/* ── Stats ── */}
+          <div style={{ marginBottom: '32px' }}>
+            <StatsBar progressMap={progressLoaded ? progressMap : {}} />
+          </div>
 
-      {/* ── Tracks ── */}
-      <div className="section-label" style={{ marginBottom: '16px' }}>
-        tracks
-      </div>
+          {/* ── Tracks ── */}
+          <div className="section-label" style={{ marginBottom: '16px' }}>
+            tracks
+          </div>
 
-      <div className="track-grid" style={{ marginBottom: '32px' }}>
-        {tracks.map((track) => (
-          <TrackCard
-            key={track.id}
-            track={track}
-            done={progressMap[track.id] ?? 0}
-          />
-        ))}
-      </div>
+          <div className="track-grid" style={{ marginBottom: '32px' }}>
+            {tracks.map((track) => (
+              <TrackCard
+                key={track.id}
+                track={track}
+                done={progressMap[track.id] ?? 0}
+              />
+            ))}
+          </div>
 
-      {/* ── How To Use ── */}
-      <HowToUse />
+          {/* ── How To Use ── */}
+          <HowToUse />
+        </div>
+
+        <div className="dashboard-sidebar">
+          <LeaderboardWidget />
+        </div>
+      </div>
     </div>
   )
 }
+

@@ -13,8 +13,8 @@ const firebaseConfig = {
 
 // Check if we have the minimum required config to initialize Firebase
 const isFirebaseConfigured = 
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  !!(process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID)
 
 let app
 let auth: ReturnType<typeof getAuth> | null = null

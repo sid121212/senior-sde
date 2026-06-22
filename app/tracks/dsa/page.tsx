@@ -57,17 +57,14 @@ export default function DSAPage() {
     e.stopPropagation()
     if (!user) return
 
-    setCompletedProblems(prev => {
-      const next = new Set(prev)
-      if (next.has(title)) {
-        next.delete(title)
-      } else {
-        next.add(title)
-      }
-      // Save updated progress back to Firestore/local DB
-      saveProgress(user.uid, 'dsa', next)
-      return next
-    })
+    const next = new Set(completedProblems)
+    if (next.has(title)) {
+      next.delete(title)
+    } else {
+      next.add(title)
+    }
+    setCompletedProblems(next)
+    await saveProgress(user.uid, 'dsa', next)
   }
 
   const totalProblems  = dsaPhases.flatMap(p => p.patterns.flatMap(pt => pt.problems)).length

@@ -51,17 +51,14 @@ export default function DesignPatternsPage() {
     e.stopPropagation()
     if (!user) return
 
-    setCompletedProblems(prev => {
-      const next = new Set(prev)
-      if (next.has(pid)) {
-        next.delete(pid)
-      } else {
-        next.add(pid)
-      }
-      // Save updated progress back to Firestore/local DB
-      saveProgress(user.uid, 'design-patterns', next)
-      return next
-    })
+    const next = new Set(completedProblems)
+    if (next.has(pid)) {
+      next.delete(pid)
+    } else {
+      next.add(pid)
+    }
+    setCompletedProblems(next)
+    await saveProgress(user.uid, 'design-patterns', next)
   }
 
   const totalProblems  = phases.flatMap(p => p.patterns.flatMap(pt => pt.problems)).length
